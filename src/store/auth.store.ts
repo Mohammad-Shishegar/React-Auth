@@ -18,7 +18,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   userInformation: null,
-  setUserData: (userInformation) => {
+  setUserData: (userInformation: UserInformation) => {
     set({ userInformation });
   },
   setAccessToken: (accessToken) => {

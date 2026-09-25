@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePost } from "../hooks/api/usePost";
 import { useAuthStore } from "../store/auth.store";
 import { useGet } from "../hooks/api/useGet";
@@ -8,6 +8,7 @@ interface AuthProviderProps {
 }
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isInitializing, setIsInitializing] = useState(true);
+  const initialized = useRef(false);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setUserInformation = useAuthStore((state) => state.setUserData);
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -20,7 +21,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const refresh = usePost("/auth/refresh", undefined, {
     onSuccess: (data) => {
-      setAccessToken(data.accessToken);
+      setAccessToken(data.data.accessToken);
+
+      console.log("NEW ACCESS TOKEN:", data.data.accessToken);
+      console.log("ZUSTAND TOKEN:", useAuthStore.getState().accessToken);
+
       getCurrentUser();
     },
     onError: () => {
@@ -29,7 +34,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     },
   });
 
+  // useEffect(() => {
+  //   refresh.mutate({});
+  // }, []);
+
   useEffect(() => {
+    if (initialized.current) {
+      return;
+    }
+
+    initialized.current = true;
+
     refresh.mutate({});
   }, []);
 

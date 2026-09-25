@@ -1,10 +1,11 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "../store/auth.store";
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_BASE_URL as string,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
+console.log(import.meta.env.VITE_BASE_URL);
 type RequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 let isRefreshing = false;
 let queue: {
